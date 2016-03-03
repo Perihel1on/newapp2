@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<style>
+			body {position: absolute; height: 100%; width: 100%; text-align: center;}
+			#tileadd {position: relative; margin-top: 15%;}
+			#tileinput {width: 200px; padding: 5px;}
+			#tilesetid {width: 30px; padding: 5px;}
+			#showrequest {position: absolute; top: 15px; left: 15px; border: 1px solid black; color: black;}
+			.visible {opacity: 1;}
+			.hidden {opacity: 0; transition: opacity 5s ease-in-out;}
+			#tilebatch {width: 400px; height: 400px; overflow: hidden;}
+		</style>
+	</head>
+	<body>
+		<script src='jquery-2.2.0.min.js'></script>
+		<script src='http://malsup.github.com/jquery.form.js'></script>
+	<div id='showrequest' class='hidden'></div>
+		<div id='tileadd'>
+			<form id='form' method='post' action='tilebatch.php'>
+				<label for='tilebatch'>Tile Batch</label><br /><textarea id='tilebatch' name='tilebatch'></textarea><br />
+				<label for='tilesetid'>Tileset ID</label>
+				<input type='text' id='tilesetid' name='tilesetid' />
+				<label for='tilesize'>Tile Size</label>
+				<select name='tilesize' id='tilesize'>
+					<option value='64x64'>64x64</option>
+					<option value='64x128'>64x128</option>
+					<option value='128x64'>128x64</option>
+					<option value='128x128'>128x128</option>
+					<option value='128x192'>128x192</option>
+					<option value='192x128'>192x128</option>
+				</select>
+				<label for='tileinput'>Input string</label><input type='text' id='tileinput' name='tileinput' /><input type='submit' value='Submit' />
+			</form>
+		</div>
+	<script>
+		var show = document.getElementById("showrequest");
+		$(document).ready(function() {
+			var options = {
+				target:			'#showrequest',
+				beforeSubmit:	showRequest,
+				success:		timeOut,
+				resetForm:		false
+			};
+			$('#form').ajaxForm(options);
+		});
+		function showRequest() {
+			show.className = "visible";
+		}
+		function timeOut(t,g) {
+			show.className = "hidden";
+			document.getElementById("tileinput").value = "";
+			document.getElementById("tilebatch").value = "";
+		}
+	</script>
+	</body>
+</html>

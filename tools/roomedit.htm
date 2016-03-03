@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="../jquery-2.2.0.min.js"></script>
+		<script src="../jquery-ui.js"></script>
+		<style>
+			body {position: absolute; top: 0; left: 0; bottom: 0; right: 0; text-align: center; background-color: black; padding: 0; margin: 0;}
+			#roomwindow {position: relative; margin-top: 25px; margin-left: auto; margin-right: auto; width: 448px; height: 448px; border: 3px inset gray; background-color: gray; text-align: center;}
+			#roomsvg {background-color: black;}
+			#tileboard {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(40,40,40,0.4); }
+			.create {position: absolute; left: 20px; top: 20px; z-index: 50;}
+			#output {position: absolute; z-index: 505; top: 25px; right: 25px; width: 600px; background-color: white; color: black; word-wrap: break-word;}
+		</style>
+	</head>
+	<body>
+		<div id='tileboard'>
+			<svg id="tileboardsvg" height="100%" width="100%">
+				<defs id='svgdefs'>
+
+				</defs>
+			</svg>
+		</div>
+		<div id='output'></div>
+		<script>
+			var NS = "http://www.w3.org/2000/svg";
+			var XL = "http://www.w3.org/1999/xlink";
+			var tileBoardSvg = document.getElementById("tileboardsvg");
+			var tileBoard = document.getElementById("tileboard");
+			function getTiles(tileset) {
+				if (tileset.length == 0) {
+					tileset = 1;
+				}
+				var xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+						createBoard(xmlhttp.responseText);
+					}
+				};
+				xmlhttp.open("GET", "gettiles.php?tileset=" + tileset, true);
+				xmlhttp.send();
+			}
+			function hoverTile(id, tileWidth, tileHeight) {
+				var tile = document.getElementById("boardtile" + id);
+				tile.setAttributeNS(null, "filter", "url(#f" + tileWidth + "x" + tileHeight + ")");
+			}
+			function unHoverTile(id) {
+				var tile = document.getElementById("boardtile" + id);
+				tile.setAttributeNS(null, "filter", "none)");
+			}
+			function createBoard(tiles) {
+				var tiles;
+				var n = tiles.split("|");
+				var tilesetStuff = n[1];
+				var tileStuff = n[0];
+				var tileset = tilesetStuff.split("+");
+				var tileT = tileStuff.split("+");
+				var filepath = tileset[0].slice(9);
+				var tsWidth = tileset[2].slice(6);
+				var tsHeight = tileset[3].slice(7);
+				var icondefs = tileset[1].slice(9);
+				var icondefsA = icondefs.split("&");
+				for (i=0; i<icondefsA.length; i++) {
+					var clips = icondefsA[i].split("=");
+					var clipSize = clips[1];
+					var clipId = "tile-cp" + clipSize;
+					var sizes = clipSize.split("x");
+					var sizeX = sizes[0];
+					var sizeY = sizes[1];
+					var svgDefs = document.getElementById("svgdefs");
+					var roomDefs = document.getElementById("roomdefs");
+					var clipPath = document.createElementNS(NS, "clipPath");
+					clipPath.setAttributeNS(null, "id", clipId);
+					svgDefs.appendChild(clipPath);
+					var clipRect = document.createElementNS(NS, "rect");
+					clipRect.setAttributeNS(null, "x", "0");
+					clipRect.setAttributeNS(null, "y", "0");
+					clipRect.setAttributeNS(null, "width", sizeX);
+					clipRect.setAttributeNS(null, "height", sizeY);
+					clipPath.appendChild(clipRect);	
+					var clipFilter1 = document.createElementNS(NS, "filter");
+					clipFilter1.setAttributeNS(null, "id", "f" + sizeX + "x" + sizeY);
+					svgdefs.appendChild(clipFilter1);
+					var clipEffect0 = document.createElementNS(NS, "feGaussianBlur");
+					clipEffect0.setAttributeNS(null, "in", "SourceAlpha");
+					clipEffect0.setAttributeNS(null, "stdDeviation", "4");
+					clipEffect0.setAttributeNS(null, "result", "blur1");
+					clipFilter1.appendChild(clipEffect0);
+					var clipEffect1 = document.createElementNS(NS, "feSpecularLighting");
+					clipEffect1.setAttributeNS(null, "in", "blur1");
+					clipEffect1.setAttributeNS(null, "result", "specOut");
+					clipEffect1.setAttributeNS(null, "specularExponent", "20");
+					clipEffect1.setAttributeNS(null, "lighting-color", "#bbbbbb");
+					clipFilter1.appendChild(clipEffect1);
+					var clipEffect2 = document.createElementNS(NS, "fePointLight");
+					clipEffect2.setAttributeNS(null, "x", sizeX/2);
+					clipEffect2.setAttributeNS(null, "y", sizeY/2);
+					clipEffect2.setAttributeNS(null, "z", "200");
+					clipEffect1.appendChild(clipEffect2);	
+					var clipEffect3 = document.createElementNS(NS, "feComposite");
+					clipEffect3.setAttributeNS(null, "in", "SourceGraphic");
+					clipEffect3.setAttributeNS(null, "in2", "specOut");
+					clipEffect3.setAttributeNS(null, "operator", "arithmetic");
+					clipEffect3.setAttributeNS(null, "k1", "0");
+					clipEffect3.setAttributeNS(null, "k2", "1");
+					clipEffect3.setAttributeNS(null, "k3", "1");
+					clipEffect3.setAttributeNS(null, "k4", "0");
+					clipFilter1.appendChild(clipEffect3);
+				}
+				
+				
+				var clipImage = document.createElementNS(NS, "image");
+				clipImage.setAttributeNS(null, "id", "tile-sprite");
+				clipImage.setAttributeNS(null, "width", tsWidth);
+				clipImage.setAttributeNS(null, "height", tsHeight);
+				clipImage.setAttributeNS(XL, "xlink:href", "../" + filepath);
+				svgdefs.appendChild(clipImage);
+				var posX = 10;
+				var posY = 10;
+				var windowWidth = window.innerWidth - 5;
+				var windowHeight = window.innerHeight - 5;
+				var roomWidth = 448;
+				var roomHeight = 448;
+				var roomDisplayX = (windowWidth - roomWidth) / 2;
+				var roomDisplayY = 10;
+				tileBoardSvg.setAttributeNS(null, "width", windowWidth);
+				tileBoardSvg.setAttributeNS(null, "height", windowHeight);
+				var roomSvg = document.createElementNS(NS, "svg");
+				roomSvg.setAttributeNS(null, "x", roomDisplayX);
+				roomSvg.setAttributeNS(null, "y", roomDisplayY);
+				roomSvg.setAttributeNS(null, "width", "448");
+				roomSvg.setAttributeNS(null, "height", "448");
+				roomSvg.setAttributeNS(null, "id", "roomsvg");
+				roomSvg.setAttributeNS(null, "style", "fill: black; stroke: black; stroke-width: 1");
+				tileBoardSvg.appendChild(roomSvg);
+				var roomBorder = document.createElementNS(NS, "rect");
+				roomBorder.setAttributeNS(null, "x", "1");
+				roomBorder.setAttributeNS(null, "y", "1");
+				roomBorder.setAttributeNS(null, "width", roomWidth - 2);
+				roomBorder.setAttributeNS(null, "height", roomHeight - 2);
+				roomBorder.setAttributeNS(null, "style", "fill: none; stroke: white; stroke-width: 1");
+				roomSvg.appendChild(roomBorder);
+				for (i=0; i<tileT.length; i++) {
+					var t = tileT[i].split("~");
+					var tileName = t[0].slice(5);
+					var tileId = t[1].slice(3);
+					var tileWidth = Number(t[2].slice(6));
+					var tileHeight = Number(t[3].slice(7));
+					var adjWidth = tileWidth / 1.5;
+					var adjHeight = tileHeight / 1.5;
+					var tileTags = t[4].slice(5);
+					var tilePosX = Number(t[5].slice(5));
+					var tilePosY = Number(t[6].slice(5));
+					if (tileOld != undefined && tileOld < adjWidth) {
+						posX = posX + adjWidth + 5;
+					}
+					var tile = document.createElementNS(NS, "g");
+					tile.setAttributeNS(null, "id", "tile" + tileId);
+					tile.setAttributeNS(null, "clip-path", "url(#tile-cp" + tileWidth + "x" + tileHeight + ")");
+					svgDefs.appendChild(tile);
+					var u = document.createElementNS(NS, "use");
+					u.setAttributeNS(XL, "xlink:href", "#tile-sprite");
+					u.setAttributeNS(null, "transform", "translate(" + tilePosX + "," + tilePosY + ")");
+					tile.appendChild(u);
+					var boardTile = document.createElementNS(NS, "svg");
+					boardTile.setAttributeNS(null, "id", "boardtile" + tileId);
+					boardTile.setAttributeNS(null, "class", "tile");
+					boardTile.setAttributeNS(null, "viewBox", "0 0 " + tileWidth + " " + tileHeight);
+					boardTile.setAttributeNS(null, "width", adjWidth);
+					boardTile.setAttributeNS(null, "height", adjHeight);
+					boardTile.setAttributeNS(null, "x", posX);
+					boardTile.setAttributeNS(null, "y", posY);
+					boardTile.setAttributeNS(null, "onmouseover", "hoverTile(" + tileId + ", " + tileWidth + ", " + tileHeight + ")");
+					boardTile.setAttributeNS(null, "onmouseout", "unHoverTile(" + tileId + ")");
+					tileBoardSvg.appendChild(boardTile);
+					$( "#boardtile" + tileId).draggable({ helper: "clone", snap: "#roomsvg", snapMode: "inner", grid: [64, 64] });
+					var btUse = document.createElementNS(NS, "use");
+					btUse.setAttributeNS(XL, "xlink:href", "#tile" + tileId);
+					boardTile.appendChild(btUse);
+					
+					var tileOld = adjWidth;
+					posX = posX + adjWidth + 5;
+					if (
+						(posY < (roomDisplayY + roomHeight)) && 
+						((posX + adjWidth) > roomDisplayX && (posX < (roomDisplayX + roomWidth)))
+					) {
+						posX = posX + roomWidth + adjWidth;
+						posY = posY;
+					} else if (
+						(posX + adjWidth) > windowWidth
+					) {
+						posX = 10;
+						posY = posY + adjHeight + 5;
+					}
+				}
+			}
+			getTiles(1);
+		</script>
+	</body>
+</html>

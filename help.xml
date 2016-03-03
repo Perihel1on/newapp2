@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<help>
+	<entry>
+		<name>help</name>
+		<helptext>
+			You can always type 'help &lt;command&gt;' to get help for a specific command or help topic.&lt;br&gt;
+			
+		</helptext>
+	</entry>
+	<entry>
+		<name></name>
+		<helptext></helptext>
+	</entry>
+	<entry>
+		<name></name>
+		<helptext></helptext>
+	</entry>
+	<entry>
+		<name></name>
+		<helptext></helptext>
+	</entry>
+	<entry>
+		<name></name>
+		<helptext></helptext>
+	</entry>
+	<entry>
+		<name></name>
+		<helptext></helptext>
+	</entry>
+</help>

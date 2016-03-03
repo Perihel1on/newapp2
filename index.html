@@ -1,0 +1,124 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<link href='https://fonts.googleapis.com/css?family=Bitter:400,700' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' type='text/css' href='style.css' />
+	<script src='jquery-2.2.0.min.js'></script>
+	<script src='jquery-ui.js'></script>
+	<script>
+		$(function() {
+			$( "#mapwin" ).draggable({ handle: ".titlebar" });
+			$( "#mapwin" ).resizable();
+			$( "#console" ).draggable({ handle: ".titlebar" });
+			$( "#console" ).resizable();
+			$( "#roomwin" ).draggable({ handle: ".titlebar" });
+			$( "#roomwin" ).resizable();
+			$( "#multi" ).draggable({ handle: ".titlebar" });
+			$( "#multi" ).resizable();
+			$( "#status" ).draggable({ handle: ".titlebar" });
+			$( "#status" ).resizable();
+		});
+	</script>
+</head>
+<body>
+	<div id='console' tabindex="0">
+		<span class='titlebar'>Console Window</span>
+		<input type='text' id='consolecmd' />
+	</div>
+	<div id='mapwin' tabindex="0">
+		<span class='maptitlebar'>Map</span>
+		<svg id='mapsvg' width='500' height='500' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		</svg>
+	</div>
+    <div id='text'></div><div id='coords'></div>
+	<div id='roomwin' tabindex="0">
+		<span class='titlebar'>Room Window</span>
+		<svg id='roomsvg' width='600' height='500' xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+		</svg>
+		<div id='cursor' class='lookRight'></div>
+	</div>
+	<div id='status' tabindex="0">
+		<span class='titlebar'>Status Bar</span>
+		<div id='healthmeter' class='meter'><span style="width: 25%" id='meter_hp'></span><span class='statustext'>HP</span></div>
+		<div id='manameter' class='meter'><span style="width: 65%" id='meter_mp'></span><span class='statustext'>MP</span></div>
+		<div id='xpmeter' class='meter'><span style="width: 30%" id='meter_xp'></span><span class='statustext'>Level </span><span id='xplevel'>2</span></div>
+		<div id='cpavail'>Char. Points:  <span id='cp_count'>0</span></div>
+	</div>
+	<div id='chat'>
+		<span class='titlebar'>Chat</span>
+		<input type='text' id='chatcmd' />
+	</div>
+	<div id='multi' tabindex="0">
+		<span class='titlebar' id='multi_title'>Multi Window</span>
+		<div id='multi_menu'>
+			<img id='menu_inventory' class='active' src='menu/inventory.png' onclick='multiPage("inventory")' />
+			<img id='menu_character' src='menu/character.png' onclick='multiPage("character")' />
+			<img id='menu_skills' src='menu/skills.png' onclick='multiPage("skills")' />
+			<img id='menu_quests' src='menu/quests.png' onclick='multiPage("quests")' />
+			<img id='menu_social' src='menu/social.png' onclick='multiPage("social")' />
+		</div>
+		<div id='multi_inner_inventory' class='multi_on'>
+			<div id='inventory'>
+			</div>
+		</div>
+		<div id='multi_inner_character' class='multi_inner'>
+			<fieldset id='char_info'>
+				<legend>Character Info</legend>
+				<table>
+					<tr>
+						<th>First name:</th>
+						<td id='charFirstname'></td>
+					</tr>
+					<tr>
+						<th>Last name:</th>
+						<td id='charLastname'></td>
+					</tr>
+					<tr>
+						<th>Class:</th>
+						<td id='charClass'></td>
+					</tr>
+				</table>
+			</fieldset>
+			<fieldset id='char_stats'>
+				<legend>Stats</legend>
+				<table>
+					<tr>
+						<th>Level:</th>
+						<td id='charLevel'></td>
+						<th>Strength</th>
+						<td id='charStrength'></td>
+					</tr>
+					<tr>
+						<th>XP:</th>
+						<td id='charXp'></td>
+						<th>Endurance</th>
+						<td id='charEndurance'></td>
+					</tr>
+					<tr>
+						<th>HP:</th>
+						<td id='charHp'></td>
+						<th>Dexterity</th>
+						<td id='charDexterity'></td>
+					</tr>
+					<tr>
+						<th>MP:</th>
+						<td id='charMp'></td>
+						<th>Intelligence</th>
+						<td id='charIntelligence'></td>
+					</tr>
+					<tr>
+						<th>Char. Points:</th>
+						<td id='charCp'></td>
+						<th>Charisma</th>
+						<td id='charCharisma'></td>
+					</tr>
+				</table>
+			</fieldset>
+		</div>
+		<div id='multi_inner_skills' class='multi_inner'></div>
+		<div id='multi_inner_quests' class='multi_inner'></div>
+		<div id='multi_inner_social' class='multi_inner'></div>
+	</div>
+<script src='script.js'></script>
+</body>
+</html>
