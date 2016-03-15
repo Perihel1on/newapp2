@@ -1,3 +1,3 @@
-# newapp2
+# Beholder
 
 3-15-2016 : Renamed project to codename Beholder.
